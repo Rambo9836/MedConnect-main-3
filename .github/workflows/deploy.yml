@@ -17,22 +17,26 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
-        # Note the double folder path here
         working-directory: ./MedConnect-main/MedConnect-main
         run: npm install
 
+      - name: Force Permissions
+        # This is the magic line that fixes "Permission denied"
+        working-directory: ./MedConnect-main/MedConnect-main
+        run: chmod +x ./node_modules/.bin/vite
+
       - name: Build Project
         working-directory: ./MedConnect-main/MedConnect-main
-        run: npm run build
+        # We call vite directly via npx for maximum compatibility
+        run: npx vite build
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
         with:
-          # Note the double folder path here as well
           publish-dir: './MedConnect-main/MedConnect-main/dist' 
           production-deploy: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions"
+          deploy-message: "Forced permission build"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
