@@ -69,12 +69,16 @@ if os.environ.get('DATABASE_URL'):
             conn_max_age=600,
         )
     }
-    # Aiven MySQL requires SSL. This is the correct way to fix the 'ssl-mode' error:
+    # Tell the driver to use SSL but ignore the self-signed certificate error
     DATABASES['default']['OPTIONS'] = {
         'ssl': {
-            'ca': '/etc/ssl/certs/ca-certificates.crt',  # Default path on Render/Linux
+            'ca': None, # We don't provide a CA file
         }
     }
+    # This is the secret for Aiven: Tell the client to use SSL but skip verification
+    # We must import this at the top of the file or right here
+    import MySQLdb.constants.CLIENT as CLIENT_FLAGS
+    DATABASES['default']['OPTIONS']['client_flag'] = CLIENT_FLAGS.SSL
 else:
     DATABASES = {
         'default': {
