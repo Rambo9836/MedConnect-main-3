@@ -67,8 +67,13 @@ if os.environ.get('DATABASE_URL'):
         'default': dj_database_url.config(
             default=os.environ.get('DATABASE_URL'),
             conn_max_age=600,
-            ssl_require=True
         )
+    }
+    # Aiven MySQL requires SSL. This is the correct way to fix the 'ssl-mode' error:
+    DATABASES['default']['OPTIONS'] = {
+        'ssl': {
+            'ca': '/etc/ssl/certs/ca-certificates.crt',  # Default path on Render/Linux
+        }
     }
 else:
     DATABASES = {
