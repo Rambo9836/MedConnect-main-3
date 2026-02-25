@@ -17,19 +17,19 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
-        # This tells GitHub the package.json is inside MedConnect-main
-        working-directory: ./MedConnect-main
+        # Note the double folder path here
+        working-directory: ./MedConnect-main/MedConnect-main
         run: npm install
 
       - name: Build Project
-        working-directory: ./MedConnect-main
+        working-directory: ./MedConnect-main/MedConnect-main
         run: npm run build
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
         with:
-          # This tells Netlify where the finished files are
-          publish-dir: './MedConnect-main/dist' 
+          # Note the double folder path here as well
+          publish-dir: './MedConnect-main/MedConnect-main/dist' 
           production-deploy: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy from GitHub Actions"
