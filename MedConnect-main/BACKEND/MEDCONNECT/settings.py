@@ -61,24 +61,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MEDCONNECT.wsgi.application'
 
-# Database Configuration
+import os
+from urllib.parse import urlparse
+
 if os.environ.get('DATABASE_URL'):
+    # Manually parse the URL to avoid helper library errors
+    url = urlparse(os.environ.get('DATABASE_URL'))
+    
     DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ.get('DATABASE_URL'),
-            conn_max_age=600,
-        )
-    }
-    # Tell the driver to use SSL but ignore the self-signed certificate error
-    DATABASES['default']['OPTIONS'] = {
-        'ssl': {
-            'ca': None, # We don't provide a CA file
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': url.path[1:],
+            'USER': url.username,
+            'PASSWORD': url.password,
+            'HOST': url.hostname,
+            'PORT': url.port,
+            'OPTIONS': {
+                'ssl': {'ca': None}, # Use SSL but skip cert verification
+            }
         }
     }
-    # This is the secret for Aiven: Tell the client to use SSL but skip verification
-    # We must import this at the top of the file or right here
-    import MySQLdb.constants.CLIENT as CLIENT_FLAGS
-    DATABASES['default']['OPTIONS']['client_flag'] = CLIENT_FLAGS.SSL
 else:
     DATABASES = {
         'default': {
