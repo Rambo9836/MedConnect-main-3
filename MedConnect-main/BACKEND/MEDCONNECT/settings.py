@@ -30,17 +30,7 @@ INSTALLED_APPS = [
     'medconnect_app', 
 ]
 
-MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # For static files on Render
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+
 
 ROOT_URLCONF = 'MEDCONNECT.urls'
 
@@ -103,46 +93,53 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# --- STATIC FILES ---
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# 1. Get URLs from Environment Variables (set these in Render dashboard later)
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
-BACKEND_URL = os.environ.get('BACKEND_URL', 'http://localhost:8000')
+# --- SECURITY & HTTPS (Required for Render) ---
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# 2. Update CORS
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    FRONTEND_URL,  # This will read your Netlify URL from Render settings
-]
-
-# 3. Update CSRF
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    FRONTEND_URL,
-    BACKEND_URL,   # This will read your Render URL from Render settings
-]
-
-# Production Security Settings (HTTPS)
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SESSION_COOKIE_SAMESITE = 'None'  # Mandatory for Netlify -> Render
+    CSRF_COOKIE_SAMESITE = 'None'     # Mandatory for Netlify -> Render
     SECURE_SSL_REDIRECT = True
-    X_FRAME_OPTIONS = 'DENY'
 
-# Additional CORS configuration
-CORS_ALLOW_HEADERS = [
-    'accept', 'accept-encoding', 'authorization', 'content-type',
-    'dnt', 'origin', 'user-agent', 'x-csrftoken', 'x-requested-with', 'cookie',
+# --- CORS & ORIGINS ---
+CORS_ALLOW_CREDENTIALS = True  # FIXES THE ERROR IN YOUR SCREENSHOT
+
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173').rstrip('/')
+BACKEND_URL = os.environ.get('BACKEND_URL', 'http://localhost:8000').rstrip('/')
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    FRONTEND_URL,
 ]
 
-# Media files
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    FRONTEND_URL,
+    BACKEND_URL,
+]
+
+# --- MIDDLEWARE (Ensure CorsMiddleware is #1) ---
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+# --- REMAINING SETTINGS ---
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
