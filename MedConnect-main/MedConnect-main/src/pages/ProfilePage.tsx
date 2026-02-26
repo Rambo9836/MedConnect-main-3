@@ -18,7 +18,9 @@ const ProfilePage: React.FC = () => {
     uploadProfilePicture,
     loading 
   } = useData();
-  const API_BASE = `${window.location.protocol}//${window.location.hostname}:8000`;
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000'
+  : 'https://medconnect-main-3.onrender.com';
   
   const [editing, setEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');

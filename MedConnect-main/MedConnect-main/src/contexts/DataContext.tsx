@@ -118,8 +118,9 @@ interface DataProviderProps {
 const DataProvider = React.memo(({ children }: DataProviderProps) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const API_BASE = `${window.location.protocol}//${window.location.hostname}:8000`;
-  
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000'
+  : 'https://medconnect-main-3.onrender.com';
   // Clinical Trials
   const [clinicalTrials, setClinicalTrials] = useState<ClinicalTrial[]>([]);
   const [userStudies, setUserStudies] = useState<ClinicalTrial[]>([]);

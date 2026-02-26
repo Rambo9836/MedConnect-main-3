@@ -24,7 +24,9 @@ function useAuth() {
 
 // Use React.memo for better Fast Refresh compatibility
 const AuthProvider = React.memo(({ children }: { children: React.ReactNode }) => {
-  const API_BASE = `${window.location.protocol}//${window.location.hostname}:8000`;
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000'
+  : 'https://medconnect-main-3.onrender.com';
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 

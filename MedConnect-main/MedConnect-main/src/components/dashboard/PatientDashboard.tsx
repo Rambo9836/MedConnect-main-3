@@ -28,7 +28,9 @@ const PatientDashboard: React.FC = () => {
   const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
-  const API_BASE = `${window.location.protocol}//${window.location.hostname}:8000`;
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000'
+  : 'https://medconnect-main-3.onrender.com';
 
   const potentialMatches = clinicalTrials.slice(0, 2).map(trial => ({
     ...trial,
