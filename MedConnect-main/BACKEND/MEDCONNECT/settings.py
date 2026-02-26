@@ -87,30 +87,28 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_TZ = True
-
-# --- STATIC FILES ---
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 # --- SECURITY & HTTPS (Required for Render) ---
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+# This ensures cookies work across different domains (Netlify -> Render)
+CORS_ALLOW_CREDENTIALS = True
+
 if not DEBUG:
+    # Production Settings (Render/Netlify)
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SAMESITE = 'None'  # Mandatory for Netlify -> Render
-    CSRF_COOKIE_SAMESITE = 'None'     # Mandatory for Netlify -> Render
+    SESSION_COOKIE_SAMESITE = 'None' 
+    CSRF_COOKIE_SAMESITE = 'None'    
     SECURE_SSL_REDIRECT = True
+else:
+    # Local Settings (Development)
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SAMESITE = 'Lax'
 
 # --- CORS & ORIGINS ---
-CORS_ALLOW_CREDENTIALS = True  # FIXES THE ERROR IN YOUR SCREENSHOT
-
+# Uses Environment Variables from Render, but defaults to localhost for your computer
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173').rstrip('/')
 BACKEND_URL = os.environ.get('BACKEND_URL', 'http://localhost:8000').rstrip('/')
 
@@ -122,6 +120,7 @@ CORS_ALLOWED_ORIGINS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
+    "http://127.0.0.1:8000",
     FRONTEND_URL,
     BACKEND_URL,
 ]

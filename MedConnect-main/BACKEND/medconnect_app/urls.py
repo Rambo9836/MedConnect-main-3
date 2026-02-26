@@ -4,15 +4,15 @@ from . import views, api_views
 app_name = 'medconnect_app'
 
 urlpatterns = [
-    # 1. FIXED: Points to the home function we just added
     path('', views.home, name='home'),
     
-    # 2. FIXED: These now point to the NEW JSON logic in views.py
+    # AUTH & PROFILE - Map these to the NEW functions in views.py
     path('api/login/', views.user_login, name='api_login'),
     path('api/register/patient/', views.patient_register, name='api_register_patient'),
     path('api/register/researcher/', views.researcher_register, name='api_register_researcher'),
     path('api/logout/', views.user_logout, name='api_logout'),
     path('api/profile/', views.get_profile, name='api_profile'),
+    path('api/user/', views.api_user_info, name='api_user_info'),
 
 
     # API endpoints
