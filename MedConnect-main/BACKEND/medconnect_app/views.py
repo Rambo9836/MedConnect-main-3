@@ -7,7 +7,9 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Profile, PatientProfile, ResearcherProfile
-
+@csrf_exempt
+def home(request):
+    return JsonResponse({"message": "MedConnect API is running", "status": "success"})
 # Helper to format user data for React
 def get_user_data(user, role):
     return {
